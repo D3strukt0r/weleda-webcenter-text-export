@@ -1,0 +1,41 @@
+vm:
+  name: Weleda WebCenter Text Export
+  cpus: 4
+  memory: 4096
+
+network:
+  # Hostname and IP for local box: IP must be changed if multiple VMs are
+  # running on the same host. Leave IP empty to dynamically assign one via
+  # DHCP -- however, the Hostsupdater will not work then
+  # IP range "192.168.56.1 - 192.168.63.254" is allowed. (Don't use .1 in case
+  # it's used by a router.
+  ip: 192.168.58.3
+  # Use .test TLD for local development, and specifically not .local on macOS
+  # since conflicts with Bonjour can lead to performance issues(opens new window).
+  # Note: Using a dash "-" in the hostname, might not make it accessible
+  hostname: weleda-webcenter-text-export.test
+  aliases:
+    - 'traefik.weleda-webcenter-text-export.test'
+
+folder:
+  # Enter "nfs", "rsync" or "smb" here. Both work on Mac. NFS folders do not work on
+  # Windows hosts. Vagrant will ignore your request for NFS synced folders on
+  # Windows.
+  # To avoid having to enter sudo password every time you run vagrant up,
+  # follow guide on:
+  # https://www.vagrantup.com/docs/synced-folders/nfs#root-privilege-requirement
+  type: 'nfs'
+  rsync:
+    # The following directories are not synchronized via Rsync. Only used if
+    # shared_folder_type = "rsync"
+    exclude:
+      - '.git/'
+      - '.idea/'
+      - '.vscode/'
+      - 'pwa/node_modules/*'
+      - 'pwa/build/*'
+  # If you want to use SMB, set the type to "smb" and uncomment the following
+  # lines and fill in your Windows User credentials.
+  #smb:
+  #  username:
+  #  password:

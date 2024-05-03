@@ -1,25 +1,27 @@
+# https://stackoverflow.com/a/51429852/4156752
+# Ignore everything
+*
+
+# Allow files and directories
+!/.docker/rootfs
+
+!/pwa/.docker/rootfs
+!/pwa/public
+!/pwa/src
+!/pwa/.browserlistrc
+!/pwa/index.html
+!/pwa/package.json
+!/pwa/pnpm-lock.yaml
+!/pwa/postcss.config.js
+!/pwa/tailwind.config.ts
+!/pwa/tsconfig.json
+!/pwa/tsconfig.node.json
+!/pwa/vite.config.ts
+!/pwa/vitest-setup.js
+
+# Ignore unnecessary files inside allowed directories
+# This should go after the allowed directories
+**/*~
 **/*.log
-**/*.md
-**/*.php~
-**/*.bat
-**/._*
-**/.dockerignore
 **/.DS_Store
-**/.git/
-**/.gitattributes
-**/.gitignore
-**/.gitmodules
-**/docker-compose.*.yaml
-**/docker-compose.*.yml
-**/docker-compose.yaml
-**/docker-compose.yml
-**/Dockerfile
 **/Thumbs.db
-**/.editorconfig
-**/.env.*.local
-**/.env.local
-# **/*.test.tsx
-.github/
-.idea/
-.vscode/
-build/

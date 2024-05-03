@@ -1,0 +1,10 @@
+services:
+  pwa:
+    build:
+      dockerfile: pwa.Dockerfile
+      ssh:
+        - default
+      target: prod
+      platforms:
+        - linux/amd64
+        #- linux/arm64

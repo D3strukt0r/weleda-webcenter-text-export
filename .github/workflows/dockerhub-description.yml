@@ -1,8 +1,5 @@
 name: Update Docker Hub Description
 
-env:
-  IMAGE_NAME: weleda-webcenter-text-export
-
 on:
   push:
     branches:
@@ -11,28 +8,22 @@ on:
       - README.md
       - .github/workflows/dockerhub-description.yml
 
-  workflow_dispatch:
+  workflow_dispatch: ~
 
 jobs:
   dockerHubDescription:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Prepare
         id: prep
-        run: echo "::set-output name=repository::$(echo "${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME" | tr '[A-Z]' '[a-z]')"
+        run: echo "::set-output name=repository::$(echo "${{ secrets.DOCKER_IMAGE }}" | tr '[A-Z]' '[a-z]')"
 
-      - name: Update README for image on Docker Hub
-        uses: peter-evans/dockerhub-description@v2
+      - uses: peter-evans/dockerhub-description@v4
         with:
-          # Docker Hub username. If updating a Docker Hub repository belonging to an organization, this user must have Admin permissions for the repository.
           username: ${{ secrets.DOCKER_USERNAME }}
-          # Docker Hub password.
           password: ${{ secrets.DOCKER_PASSWORD }}
-          # Docker Hub repository in the format <namespace>/<name>.
-          repository: ${{ steps.prep.outputs.repository }} # optional, default is "github.repository"
-          # Docker Hub repository short description. Input exceeding 100 characters will be truncated.
-          short-description: ${{ github.event.repository.description }} # optional
-          # Path to the repository readme.
-          # readme-filepath: ./README.md # optional, default is "./README.md"
+          repository: ${{ steps.prep.outputs.repository }}
+          short-description: ${{ github.event.repository.description }}

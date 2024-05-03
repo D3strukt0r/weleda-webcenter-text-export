@@ -1,0 +1,15 @@
+{
+    "name": "Web Center XML zu Text",
+    "short_name": "Weleda Web Center XML zu Text Konverter",
+    "icons": [
+        {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ],
+    "start_url": ".",
+    "theme_color": "#64dd17",
+    "background_color": "#ffffff",
+    "display": "standalone"
+}

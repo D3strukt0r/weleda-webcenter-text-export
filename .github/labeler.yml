@@ -4,17 +4,17 @@ repo:
 
 # Add 'docker' label to any change to files within the docker dir and docker relevant files
 docker:
-  - docker/**/*
-  - .dockerignore
+  - pwa/.docker/**/*
+  - pwa/.dockerignore
+  - pwa/Dockerfile
   - docker-compose.yml
-  - Dockerfile
 
 # Add 'source' label to any change to files within the source dir EXCEPT for the test files
 source:
-  - public/**/*
-  - src/**/*
-  - "!src/**/*.test.tsx"
+  - pwa/public/**/*
+  - pwa/src/**/*
+  - "!pwa/src/**/*.test.tsx"
 
 # Add 'test' label to any change to files within the source dir that are tests
 test:
-  - src/**/*.test.tsx
+  - pwa/src/**/*.test.tsx
