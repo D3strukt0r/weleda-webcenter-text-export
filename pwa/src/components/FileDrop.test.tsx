@@ -8,3 +8,5 @@ describe('FileDrop', () => {
     expect(screen.getByText(/upload.clickOrDrag/i)).toBeDefined();
   });
 });
+
+console.log('test')
