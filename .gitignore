@@ -177,3 +177,6 @@ fabric.properties
 # Docker
 compose.yml
 compose.bake.yml
+
+# Vite
+pwa/vite.config.ts.timestamp-*.mjs

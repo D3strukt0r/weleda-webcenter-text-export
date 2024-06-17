@@ -323,7 +323,7 @@ Vagrant.configure('2') do |config|
             eval "$(ssh-agent -s)"
             ssh-add -l > /dev/null || ssh-add
             docker compose pull
-            docker compose build
+            docker compose build --pull
             docker compose up --detach
         SCRIPT
         }

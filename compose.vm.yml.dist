@@ -25,11 +25,6 @@ services:
       - traefik
     labels:
       traefik.enable: true
-
-      traefik.http.routers.pwa0.entrypoints: web
-      traefik.http.routers.pwa0.rule: Host(`weleda-webcenter-text-export.test`)
-      traefik.http.routers.pwa0.middlewares: redirect-to-https
-
       traefik.http.routers.pwa.entrypoints: websecure
       traefik.http.routers.pwa.rule: Host(`weleda-webcenter-text-export.test`)
       traefik.http.routers.pwa.tls: true
@@ -45,6 +40,9 @@ services:
       - --providers.file.directory=/etc/traefik/dynamic_conf
       - --providers.file.watch=true
       - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.permanent=true
       - --entrypoints.websecure.address=:443
     ports:
       - '80:80'
@@ -56,16 +54,7 @@ services:
       - ./.docker/rootfs-local/traefik/etc/traefik/dynamic_conf/conf.yml:/etc/traefik/dynamic_conf/conf.yml:ro
     labels:
       traefik.enable: true
-
-      traefik.http.routers.traefik0.entrypoints: web
-      traefik.http.routers.traefik0.rule: Host(`traefik.weleda-webcenter-text-export.test`)
-      traefik.http.routers.traefik0.middlewares: redirect-to-https
-
       traefik.http.routers.traefik.entrypoints: websecure
       traefik.http.routers.traefik.rule: Host(`traefik.weleda-webcenter-text-export.test`)
       traefik.http.routers.traefik.tls: true
       traefik.http.routers.traefik.service: api@internal
-
-      traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
-      traefik.http.middlewares.redirect-to-https-perm.redirectscheme.scheme: https
-      traefik.http.middlewares.redirect-to-https-perm.redirectscheme.permanent: true

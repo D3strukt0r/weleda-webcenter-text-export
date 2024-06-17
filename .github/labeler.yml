@@ -1,20 +1,33 @@
-# Add 'repo' label to any root file changes
-repo:
-  - ./*
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: '**/*.md'
 
-# Add 'docker' label to any change to files within the docker dir and docker relevant files
+feature:
+ - head-branch: ['^feature', 'feature']
+
+release:
+  - all:
+    - base-branch: 'master'
+    - head-branch: ['^release', 'release']
+
 docker:
-  - pwa/.docker/**/*
-  - pwa/.dockerignore
-  - pwa/Dockerfile
-  - docker-compose.yml
+- changed-files:
+  - any-glob-to-any-file:
+    - '.docker/**/*'
+    - 'pwa/.docker/**/*'
+    - '.dockerignore'
+    - 'pwa.Dockerfile'
+    - 'compose.build.yml'
+    - 'compose.vm.yml.dist'
 
-# Add 'source' label to any change to files within the source dir EXCEPT for the test files
 source:
-  - pwa/public/**/*
-  - pwa/src/**/*
-  - "!pwa/src/**/*.test.tsx"
+  - all:
+    - changed-files:
+      - any-glob-to-any-file:
+        - 'pwa/public/**/*'
+        - 'pwa/src/**/*'
+      - all-globs-to-all-files: '!pwa/src/**/*.test.tsx'
 
-# Add 'test' label to any change to files within the source dir that are tests
 test:
-  - pwa/src/**/*.test.tsx
+  - changed-files:
+    - any-glob-to-any-file: 'pwa/src/**/*.test.tsx'

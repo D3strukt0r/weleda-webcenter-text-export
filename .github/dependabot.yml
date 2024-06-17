@@ -15,8 +15,10 @@ updates:
       - "D3strukt0r"
     schedule:
       interval: "daily"
+      time: "08:00"
+      timezone: "Europe/Zurich"
 
-  # macOS pnpm
+  # PWA pnpm
   - package-ecosystem: "npm"
     directory: "/pwa"
     target-branch: "develop"
@@ -26,3 +28,13 @@ updates:
       - "D3strukt0r"
     schedule:
       interval: "daily"
+      time: "08:00"
+      timezone: "Europe/Zurich"
+    groups:
+      pwa-dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"

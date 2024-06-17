@@ -2,3 +2,9 @@
 
 # These owners will be the default owners for everything in the repo.
 * @D3strukt0r
+
+# https://stackoverflow.com/questions/75531641/exclude-codeowners-from-dependabot-pr
+# Don't automatically assign reviewers on PRs that only modify these files.
+# As they have no owner listed, these files are not owned by anyone.
+pwa/package.json
+pwa/pnpm-lock.yaml
