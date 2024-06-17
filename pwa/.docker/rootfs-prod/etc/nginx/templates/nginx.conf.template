@@ -1,7 +1,8 @@
 # Used references from:
 # - https://www.digitalocean.com/community/tools/nginx?domains.0.server.domain=wedding-manuele-robine.d3strukt0r.dev&domains.0.server.documentRoot=%2Fapp&domains.0.server.wwwSubdomain=true&domains.0.https.http3=true&domains.0.https.hstsPreload=true&domains.0.php.phpServer=%2Fvar%2Frun%2Fphp%2Fphp8.2-fpm.sock&domains.0.restrict.connectMethod=true&domains.0.onion.onionLocation=dwadawdwadwa.onion&global.https.ocspCloudflareType=both&global.https.ocspGoogleType=both&global.https.ocspOpenDnsType=both&global.security.referrerPolicy=strict-origin-when-cross-origin&global.security.serverTokens=true&global.security.limitReq=true&global.security.securityTxt=true&global.performance.brotliCompression=true&global.nginx.user=nginx&global.nginx.pid=%2Fvar%2Frun%2Fnginx.pid&global.nginx.clientMaxBodySize=100&global.docker.dockerfile=true&global.docker.dockerCompose=true&global.app.lang=de
 
-user app;
+# Container already runs as nginx user, so no need to set it here
+#user nginx;
 
 # Set number of worker processes automatically based on number of CPU cores.
 # https://nginx.org/en/docs/ngx_core_module.html#worker_processes
@@ -19,7 +20,7 @@ error_log /var/log/nginx/error.log info;
 # Includes files with directives to load dynamic modules.
 include /etc/nginx/modules-enabled/*.conf;
 
-pid /run/nginx.pid;
+pid /tmp/nginx.pid;
 
 events {
     # Accept simultaneous connections that can be opened by a worker process.

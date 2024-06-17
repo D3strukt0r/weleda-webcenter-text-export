@@ -5,10 +5,10 @@
 # Allow files and directories
 !/.docker/rootfs
 
-!/pwa/.docker/rootfs
+!/pwa/.docker/rootfs-prod
 !/pwa/public
 !/pwa/src
-!/pwa/.browserlistrc
+!/pwa/.browserslistrc
 !/pwa/index.html
 !/pwa/package.json
 !/pwa/pnpm-lock.yaml

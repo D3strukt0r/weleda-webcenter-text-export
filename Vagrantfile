@@ -324,7 +324,7 @@ Vagrant.configure('2') do |config|
             ssh-add -l > /dev/null || ssh-add
             docker compose pull
             docker compose build --pull
-            docker compose up --detach
+            docker compose --profile dev up --detach
         SCRIPT
         }
     end

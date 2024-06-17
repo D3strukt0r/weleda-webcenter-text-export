@@ -10,7 +10,7 @@ if [ "${1#-}" != "${1}" ] || [ -z "$(command -v "${1}")" ] || { [ -f "${1}" ] &&
 fi
 
 # Setup main command if it's used
-if [ "$1" = 'node' ] || [ "$1" = 'supervisord' ]; then
+if [ "$1" = 'node' ] || [ "$1" = 'pnpm' ]; then
   # Logging functions
   entrypoint_log() {
     local type="$1"
