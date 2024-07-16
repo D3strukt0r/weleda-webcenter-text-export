@@ -15,7 +15,7 @@ on:
       # Below should match .dockerignore
       - '.docker/rootfs/**'
 
-      - 'pwa/.docker/rootfs/**'
+      - 'pwa/.docker/rootfs-prod/**'
       - 'pwa/public/**'
       - 'pwa/src/**'
       - pwa/.browserslistrc

@@ -5,7 +5,7 @@ services:
       ssh:
         - default
       target: dev
-    init: true
+    profiles: [dev]
     container_name: pwa
     volumes:
       # Mount app directory
@@ -14,13 +14,26 @@ services:
       # Store package manager cache in vagrant
       - ~/data/pnpm:/var/cache/pnpm
 
-      # Disable nginx process and use vite dev server
-      - ./.docker/rootfs-local/empty.txt:/etc/supervisor/conf.d/nginx.conf
-      - ./pwa/.docker/rootfs-local/etc/supervisor/conf.d/vite-dev-server.conf:/etc/supervisor/conf.d/vite-dev-server.conf
-
       # Entrypoint scripts to run only locally (install deps, etc.)
-      - ./pwa/.docker/rootfs-local/docker-entrypoint.d/10_install-deps.sh:/docker-entrypoint.d/10_install-deps.sh
+      - ./pwa/.docker/rootfs-dev/usr/local/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+      - ./pwa/.docker/rootfs-dev/docker-entrypoint.d/10_install-deps.sh:/docker-entrypoint.d/10_install-deps.sh
       #- ./pwa/.docker/rootfs-local/docker-entrypoint.d/20_build.sh:/docker-entrypoint.d/20_build.sh
+    depends_on:
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.routers.pwa.entrypoints: websecure
+      traefik.http.routers.pwa.rule: Host(`weleda-webcenter-text-export.test`)
+      traefik.http.routers.pwa.tls: true
+
+  pwa-prod:
+    build:
+      dockerfile: pwa.Dockerfile
+      ssh:
+        - default
+      target: prod
+    profiles: [prod]
+    container_name: pwa-prod
     depends_on:
       - traefik
     labels:

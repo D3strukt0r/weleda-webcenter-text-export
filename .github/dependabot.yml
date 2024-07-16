@@ -14,8 +14,8 @@ updates:
     reviewers:
       - "D3strukt0r"
     schedule:
-      interval: "daily"
-      time: "08:00"
+      interval: "weekly" # on monday
+      time: "16:00"
       timezone: "Europe/Zurich"
 
   # PWA pnpm
@@ -27,8 +27,24 @@ updates:
     reviewers:
       - "D3strukt0r"
     schedule:
-      interval: "daily"
-      time: "08:00"
+      interval: "weekly" # on monday
+      time: "16:00"
+      timezone: "Europe/Zurich"
+    groups:
+      pwa-dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+  - package-ecosystem: "npm"
+    directory: "/pwa"
+    target-branch: "develop"
+    labels:
+      - "dependabot :robot:"
+    schedule:
+      interval: "weekly" # on monday
+      time: "16:00"
       timezone: "Europe/Zurich"
     groups:
       pwa-dependencies:
