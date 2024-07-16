@@ -24,6 +24,8 @@ folder:
   # To avoid having to enter sudo password every time you run vagrant up,
   # follow guide on:
   # https://www.vagrantup.com/docs/synced-folders/nfs#root-privilege-requirement
+  # If there is an error with NFS (Connection reset by peer), you can try to run
+  # `sudo nfsd update` after the error, manually shutdown the VM and run `vagrant up`
   type: 'nfs'
   rsync:
     # The following directories are not synchronized via Rsync. Only used if
