@@ -5,7 +5,8 @@ Converts Web Center's XML export file into raw text.
 Project
 
 [![License](https://img.shields.io/github/license/d3strukt0r/weleda-webcenter-text-export)](LICENSE.txt)
-[![Docker Stars](https://img.shields.io/docker/stars/d3strukt0r/weleda-webcenter-text-export.svg?label=docker%20stars%20)][docker]
+[![Docker Stars](https://img.shields.io/docker/stars/d3strukt0r/weleda-webcenter-text-export.svg?label=docker%20stars%20)][![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FD3strukt0r%2Fweleda-webcenter-text-export.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FD3strukt0r%2Fweleda-webcenter-text-export?ref=badge_shield)
+[docker]
 [![Docker Pulls](https://img.shields.io/docker/pulls/d3strukt0r/weleda-webcenter-text-export.svg?label=docker%20pulls%20)][docker]
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
@@ -80,6 +81,9 @@ See also the full list of [contributors][gh-contributors] who participated in th
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FD3strukt0r%2Fweleda-webcenter-text-export.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FD3strukt0r%2Fweleda-webcenter-text-export?ref=badge_large)
 
 ## Acknowledgments
 
