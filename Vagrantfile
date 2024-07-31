@@ -206,6 +206,7 @@ Vagrant.configure('2') do |config|
     config.vm.provision 'fix-app-data-permissions', type: 'shell', privileged: false, run: 'always', inline: <<-SCRIPT
         set -e -u -x -o pipefail
         sudo chown --recursive vagrant:vagrant ~/data
+        sudo chown --recursive 999:999 ~/data/pnpm
     SCRIPT
 
     # Copy compose.yml.dist if it doesn't exist yet to compose.yml
