@@ -54,9 +54,11 @@
 *.bash     text eol=lf
 *.fish     text eol=lf
 *.sh       text eol=lf
-*.envsh    text eol=lf # Our custom shell extension
+# Our custom shell extension
+*.envsh    text eol=lf
 *.zsh      text eol=lf
-crontab.*  text eol=lf # Or cron tabs end with the environments name
+# Or cron tabs end with the environments name
+crontab.*  text eol=lf
 # These are explicitly windows files and should use crlf
 *.bat      text eol=crlf
 *.cmd      text eol=crlf
