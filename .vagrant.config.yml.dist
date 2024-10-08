@@ -17,6 +17,9 @@ network:
   aliases:
     - 'traefik.weleda-webcenter-text-export.test'
 
+ssh:
+  forward_agent: true
+
 folder:
   # Enter "nfs", "rsync" or "smb" here. Both work on Mac. NFS folders do not work on
   # Windows hosts. Vagrant will ignore your request for NFS synced folders on
