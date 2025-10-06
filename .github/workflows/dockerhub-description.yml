@@ -19,7 +19,7 @@ jobs:
         id: prep
         run: echo "repository=$(echo "${{ vars.IMAGE_NAME }}" | tr '[A-Z]' '[a-z]')" >> $GITHUB_OUTPUT
 
-      - uses: peter-evans/dockerhub-description@v4
+      - uses: peter-evans/dockerhub-description@v5
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
