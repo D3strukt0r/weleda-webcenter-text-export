@@ -74,7 +74,7 @@ jobs:
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata (PWA)
         id: meta-pwa
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ vars.IMAGE_NAME }}
 
