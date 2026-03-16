@@ -79,7 +79,7 @@ jobs:
           images: ${{ vars.IMAGE_NAME }}
 
       - name: Start SSH agent for Docker build with '--mount=type=ssh'
-        uses: webfactory/ssh-agent@v0.9.1
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
