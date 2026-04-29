@@ -1,106 +1,161 @@
-# Weleda Web Center XML to text converter
+# Weleda Web Center XML to Text Converter
 
-Converts Web Center's XML export file into raw text.
+Converts a GS1 `artwork_content:artworkContentMessage` XML (the format
+exported from Esko Web Center) into a readable plain-text leaflet — the
+kind that's easy to paste into Word for layouting. Everything runs locally
+in the browser; no file ever leaves the machine.
 
-[![License](https://img.shields.io/github/license/d3strukt0r/weleda-webcenter-text-export?label=License)](LICENSE.txt)
-[![Docker Stars](https://img.shields.io/docker/stars/d3strukt0r/weleda-webcenter-text-export.svg?label=docker%20stars%20)][docker]
-[![Docker Pulls](https://img.shields.io/docker/pulls/d3strukt0r/weleda-webcenter-text-export.svg?label=docker%20pulls%20)][docker]
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa)][code-of-conduct]
+Three ways to load an XML:
 
-master-branch (alias latest)
+- **Drop it anywhere on the page** — the whole window is a drop target.
+- **Click the dropzone** — opens a regular file picker.
+- **Ctrl/Cmd+V** — paste either the *file* (copied with Ctrl+C in your
+  file explorer) or the *raw XML text* directly.
 
-[![GH Action CI/CD](https://github.com/D3strukt0r/weleda-webcenter-text-export/workflows/CI/CD/badge.svg?branch=master)][gh-action]
-[![Codacy grade](https://img.shields.io/codacy/grade/a7d3a41ddccf4662880b35ae48f67454/master)][codacy]
+[![License](https://img.shields.io/github/license/D3strukt0r/weleda-webcenter-text-export?label=License)](LICENSE.txt)
+[![Docker Stars](https://img.shields.io/docker/stars/d3strukt0r/weleda-webcenter-text-export.svg?label=docker%20stars)][docker]
+[![Docker Pulls](https://img.shields.io/docker/pulls/d3strukt0r/weleda-webcenter-text-export.svg?label=docker%20pulls)][docker]
 
-develop-branch
+[![CI](https://github.com/D3strukt0r/weleda-webcenter-text-export/actions/workflows/ci.yml/badge.svg?branch=master)][gh-action]
+[![Pages](https://github.com/D3strukt0r/weleda-webcenter-text-export/actions/workflows/deploy-gh-pages.yml/badge.svg?branch=master)][gh-action]
+[![Docker](https://github.com/D3strukt0r/weleda-webcenter-text-export/actions/workflows/docker.yml/badge.svg?branch=master)][gh-action]
 
-[![GH Action CI/CD](https://github.com/D3strukt0r/weleda-webcenter-text-export/workflows/CI/CD/badge.svg?branch=develop)][gh-action]
-[![Codacy grade](https://img.shields.io/codacy/grade/a7d3a41ddccf4662880b35ae48f67454/develop)][codacy]
+## Stack
 
-## Getting Started
+- [React Router v7](https://reactrouter.com/) (framework mode), React 19,
+  TypeScript
+- [Vite](https://vitejs.dev/) build, [Vitest](https://vitest.dev/) tests
+- [Tailwind CSS v4](https://tailwindcss.com/) + [Sass](https://sass-lang.com/)
+  (`api: modern-compiler`)
+- [i18next](https://www.i18next.com/) — UI strings live in
+  [`app/locales/de.yml`](app/locales/de.yml)
+- [`fast-xml-parser`](https://github.com/NaturalIntelligence/fast-xml-parser)
+  — pure JS, runs in browser + Node, deterministic for tests
+- [pnpm](https://pnpm.io/) (`packageManager` pinned)
+- Dual-mode build: SSR for Docker, static (SPA) for GitHub Pages
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+## Getting started
 
-### Prerequisites
-
-What things you need to install the software and how to install them
-
-Requires Node.js and Yarn.
-
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Run a local server:
-
-```shell
-yarn run start
-```
-
-## Running the tests
-
-Explain how to run the automated tests for this system
+### On the host (no Docker)
 
 ```shell
-yarn run test
+pnpm install
+pnpm dev          # http://localhost:5173
 ```
 
-## Deployment
+### In a devcontainer (Docker outside of Docker)
+
+VS Code → **Reopen in Container** (`.devcontainer/devcontainer.json` ships
+Node 24, `act`, the DooD feature). Once it's up:
 
 ```shell
-yarn run deploy
+pnpm dev                  # Vite inside the devcontainer
+# or
+docker compose up dev     # Vite in a sibling container, host workspace
+                          # bind-mounted via $LOCAL_WORKSPACE_FOLDER
 ```
 
-## Built With
+### In a Vagrant VM (full HTTPS stack on a `.test` hostname)
 
-* [Yarn](https://yarnpkg.com/lang/en/) - Dependency Management
-* [React](https://reactjs.org/) - The web framework used
-* [Material UI](https://material-ui.com/) - The design used
-* [Github Actions](https://github.com/features/actions) - CI (Testing) / CD (Deployment)
-* [Docker](https://www.docker.com) - Containerization
+Requires VirtualBox + Vagrant + [`mkcert`](https://github.com/FiloSottile/mkcert)
+on the host (the Vagrantfile asks `mkcert` to mint local certs on first
+boot).
 
-## Contributing
+```shell
+vagrant up        # provisions Debian 12, Docker, brings up Traefik + dev
+# app reachable at https://weleda-webcenter-text-export.test
+# Traefik dashboard at https://traefik.weleda-webcenter-text-export.test
+```
 
-Please read [CONTRIBUTING.md][contributing] for details on our code of conduct and the process for submitting pull requests.
+`compose.vm.yml.dist` is the template; it's copied to `compose.vm.yml`
+inside the VM (gitignored). Switch between dev and prod with the compose
+profiles:
 
-This project uses [Conventional Commits](https://www.conventionalcommits.org/).
+```shell
+docker compose -f compose.vm.yml --profile dev up    # Vite
+docker compose -f compose.vm.yml --profile prod up   # SSR runtime
+```
+
+## Scripts
+
+```shell
+pnpm dev          # dev server with HMR
+pnpm build        # production build (SSR by default — outputs build/client + build/server)
+SSR=false pnpm build   # static / SPA build (build/client only)
+pnpm preview      # preview the static build locally
+pnpm typecheck    # react-router typegen + tsc --noEmit
+pnpm lint         # eslint
+pnpm test         # vitest run
+pnpm test:watch   # vitest watch
+```
+
+## Build modes
+
+`react-router.config.ts` toggles SSR via the `SSR` env var:
+
+- **Docker / Node hosting (default):** `pnpm build` → SSR bundle, served
+  by `react-router-serve` on port 3000.
+- **GitHub Pages (no Node runtime):** `SSR=false pnpm build` → static SPA
+  in `build/client/`. The
+  [`deploy-gh-pages.yml`](.github/workflows/deploy-gh-pages.yml) workflow
+  uploads that folder via `actions/deploy-pages`.
+
+## Docker
+
+```shell
+docker build -t weleda-webcenter-text-export .
+docker run --rm -p 3000:3000 weleda-webcenter-text-export
+```
+
+For local development inside Docker:
+
+```shell
+docker compose up dev    # http://localhost:5173
+```
+
+CI publishes signed multi-arch images to Docker Hub via
+[`docker.yml`](.github/workflows/docker.yml) (cosign + Buildx, linux/amd64
+and linux/arm64).
+
+## XML conversion
+
+The converter walks every `<textContent>` subtree and emits one paragraph
+per `<p>` or `<li>`. `<b>`, `<i>` etc. bubble through; `<br/>` becomes a
+soft line break inside the same paragraph. The GS1 standard business
+document header and other metadata are ignored — the output reads like a
+patient information leaflet, not an XML dump.
+
+The full behaviour is locked down by a fixture-based Vitest spec at
+[`app/lib/xml-to-text/convert.test.ts`](app/lib/xml-to-text/convert.test.ts)
+plus [`__fixtures__/sample.xml`](app/lib/xml-to-text/__fixtures__/sample.xml)
++ [`expected.txt`](app/lib/xml-to-text/__fixtures__/expected.txt).
+
+## Project layout
+
+```
+app/
+  components/      # Topbar, Lede, Dropzone, DragOverlay, Result, Toast, AppFooter
+  hooks/           # useConverter, usePageDragDrop, usePasteXml, useToast
+  lib/
+    xml-to-text/   # convert.ts + tests + fixtures
+    format.ts      # size / number formatters, regex escape
+  locales/de.yml   # all UI strings
+  routes/          # home.tsx, not-found.tsx
+  styles/          # main.scss (design tokens), tailwind.css
+  i18n.ts          # i18next bootstrap
+  root.tsx
+  routes.ts        # manifest
+public/            # served from /, includes Weleda logo + robots.txt
+```
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For available versions, see the [tags on this repository][gh-tags].
-
-## Authors
-
-### Special thanks for all the people who had helped this project so far
-
-- **Manuele** - [D3strukt0r](https://github.com/D3strukt0r)
-
-See also the full list of [contributors][gh-contributors] who participated in this project.
-
-### I would like to join this list. How can I help the project?
-
-We're currently looking for contributions for the following:
-
-- [ ] Bug fixes
-- [ ] Translations
-- [ ] etc...
-
-For more information, please refer to our [CONTRIBUTING.md][contributing] guide.
+[SemVer](https://semver.org/). See the
+[tags](https://github.com/D3strukt0r/weleda-webcenter-text-export/tags).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
+[MIT](LICENSE.txt).
 
-## Acknowledgments
-
-This project uses code from the following libraries:
-
-* [React](https://github.com/facebook/react/), MIT License
-
-[docker]: https://hub.docker.com/repository/docker/d3strukt0r/weleda-webcenter-text-export
+[docker]: https://hub.docker.com/r/d3strukt0r/weleda-webcenter-text-export
 [gh-action]: https://github.com/D3strukt0r/weleda-webcenter-text-export/actions
-[gh-tags]: https://github.com/D3strukt0r/weleda-webcenter-text-export/tags
-[gh-contributors]: https://github.com/D3strukt0r/weleda-webcenter-text-export/contributors
-[codacy]: https://www.codacy.com/manual/D3strukt0r/weleda-webcenter-text-export
-[contributing]: https://github.com/D3strukt0r/.github/blob/master/CONTRIBUTING.md
-[code-of-conduct]: https://github.com/D3strukt0r/.github/blob/master/CODE_OF_CONDUCT.md

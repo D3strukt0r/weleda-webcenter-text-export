@@ -80,13 +80,6 @@ Vagrant.configure('2') do |config|
     # --------------------------------------------------------------------------
     # Configure the synced folders
     # --------------------------------------------------------------------------
-    # TODO: Function to check if Yarn is installed on the host machine
-    #def yarn_installed?
-    #  system("yarn --version > /dev/null 2>&1")
-    #end
-    # Get the path of the Yarn cache if Yarn is installed
-    #yarn_cache_path = yarn_installed? ? `yarn cache dir`.strip : nil
-
     if settings.dig('folder', 'type') == 'nfs'
         config.nfs.map_uid = Process.uid
         config.nfs.map_gid = Process.gid
@@ -97,12 +90,6 @@ Vagrant.configure('2') do |config|
             nfs_version: 3, # TODO: Update to NFSv4
             nfs_udp: false, # UDP not allowed in NFSv4
             mount_options: ['rw', 'tcp', 'nolock', 'async']
-
-        # TODO: Set up synced folder using NFS if Yarn cache path is available
-        #if yarn_cache_path
-        #    config.vm.synced_folder yarn_cache_path, "/home/vagrant/data/yarn",
-        #        type: 'nfs'
-        #end
     elsif settings.dig('folder', 'type') == 'rsync'
         config.vm.synced_folder '.', '/vagrant',
             type: 'rsync',
@@ -112,12 +99,9 @@ Vagrant.configure('2') do |config|
 
         # An rsync watcher for Vagrant 1.5.1+ that uses fewer host resources at
         # the potential cost of more rsync actions.
-        # Configure the window for gatling to coalesce writes.
         if Vagrant.has_plugin?('vagrant-gatling-rsync')
             config.gatling.latency = 1.5
             config.gatling.time_format = '%H:%M:%S'
-
-            # Automatically sync when machines with rsync folders come up.
             config.gatling.rsync_on_startup = false
         end
     elsif settings.dig('folder', 'type') == 'smb'
@@ -199,7 +183,7 @@ Vagrant.configure('2') do |config|
         ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
     SCRIPT
 
-    config.vm.provision 'chdir-to-dockerfile', type: 'shell', privileged: false, inline: <<-SCRIPT
+    config.vm.provision 'chdir-to-vagrant', type: 'shell', privileged: false, inline: <<-SCRIPT
         set -e -u -x -o pipefail
         echo 'cd /vagrant' >> ~/.bashrc
     SCRIPT
@@ -216,11 +200,14 @@ Vagrant.configure('2') do |config|
         sudo chown --recursive 999:999 ~/data/pnpm
     SCRIPT
 
-    # Copy compose.yml.dist if it doesn't exist yet to compose.yml
+    # Copy compose.vm.yml.dist if compose.vm.yml doesn't exist yet. We use a
+    # separate file from the host/devcontainer compose.yml (which is
+    # checked-in and serves the non-Vagrant dev flow) so the synced /vagrant
+    # folder doesn't clobber it.
     config.vm.provision 'copy-necessary-dist-files', type: 'shell', privileged: false, run: 'always', inline: <<-SCRIPT
         set -e -u -x -o pipefail
-        if [ ! -f /vagrant/compose.yml ]; then
-            cp /vagrant/compose.vm.yml.dist /vagrant/compose.yml
+        if [ ! -f /vagrant/compose.vm.yml ]; then
+            cp /vagrant/compose.vm.yml.dist /vagrant/compose.vm.yml
         fi
     SCRIPT
 
@@ -232,17 +219,10 @@ Vagrant.configure('2') do |config|
 
     config.vm.provision 'check-certificates', type: 'shell', privileged: false, run: 'always', inline: <<-SCRIPT
         set -e -u -x -o pipefail
-        if [ ! -f /vagrant/.docker/certs/cert.pem ] || [ ! -f /vagrant/.docker/certs/cert.pem ]; then
-            echo "Certificate files are missing. Please run 'mkcert -cert-file ./.docker/certs/cert.pem -key-file ./.docker/certs/key.pem localhost weleda-webcenter-text-export.test "*.weleda-webcenter-text-export.test"' on the host machine."
+        if [ ! -f /vagrant/.docker/certs/cert.pem ] || [ ! -f /vagrant/.docker/certs/key.pem ]; then
+            echo "Certificate files are missing. Please run 'mkcert -cert-file ./.docker/certs/cert.pem -key-file ./.docker/certs/key.pem localhost weleda-webcenter-text-export.test \\"*.weleda-webcenter-text-export.test\\"' on the host machine."
         fi
     SCRIPT
-
-    # Increase file watcher limit for Vite.js
-    #config.vm.provision 'fix-file-watcher-limit', type: 'shell', privileged: false, inline: <<-SCRIPT
-    #    set -e -u -x -o pipefail
-    #    echo fs.inotify.max_user_watches=100000 | sudo tee -a /etc/sysctl.conf >/dev/null
-    #    sudo sysctl -p >/dev/null
-    #SCRIPT
 
     # Update Box and fix "dpkg-reconfigure: unable to re-open stdin: No file or directory"
     # See https://serverfault.com/a/717770/955565
@@ -252,9 +232,6 @@ Vagrant.configure('2') do |config|
         sudo dpkg-reconfigure debconf -f noninteractive -p critical
 
         sudo apt-get update -qq
-
-        # TODO: dist-upgrade locks the machine during bios update
-        #sudo apt-get dist-upgrade -qq >/dev/null
     SCRIPT
 
     # Fixes "fatal: detected dubious ownership in repository at '/vagrant'"
@@ -329,9 +306,9 @@ Vagrant.configure('2') do |config|
             trigger.run_remote = { privileged: false, inline: <<-SCRIPT
                 set -e -u -x -o pipefail
                 cd /vagrant
-                docker compose pull
-                docker compose build --pull
-                docker compose --profile dev up --detach
+                docker compose -f compose.vm.yml pull
+                docker compose -f compose.vm.yml build --pull
+                docker compose -f compose.vm.yml --profile dev up --detach
             SCRIPT
             }
         else
@@ -340,14 +317,14 @@ Vagrant.configure('2') do |config|
                 cd /vagrant
                 eval "$(ssh-agent -s)"
                 ssh-add -l > /dev/null || ssh-add
-                docker compose pull
-                docker compose build --pull
-                docker compose --profile dev up --detach
+                docker compose -f compose.vm.yml pull
+                docker compose -f compose.vm.yml build --pull
+                docker compose -f compose.vm.yml --profile dev up --detach
             SCRIPT
             }
         end
     end
-    config.vm.post_up_message = 'Machine was booted. Docker is starting. To check use "docker compose logs -f pwa api".'
+    config.vm.post_up_message = 'Machine was booted. Docker is starting. To check use "docker compose -f compose.vm.yml logs -f dev".'
     if settings.dig('network', 'hostname') || settings.dig('network', 'ip')
         config.vm.post_up_message += ' The application will soon be available on https://' + (settings.dig('network', 'hostname') || settings.dig('network', 'ip'))
     end
@@ -358,7 +335,7 @@ Vagrant.configure('2') do |config|
         trigger.run_remote = { privileged: false, inline: <<-SCRIPT
             set -e -u -x -o pipefail
             cd /vagrant
-            docker compose down
+            docker compose -f compose.vm.yml down
         SCRIPT
         }
     end

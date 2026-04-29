@@ -1,9 +1,11 @@
 documentation:
   - changed-files:
-    - any-glob-to-any-file: '**/*.md'
+    - any-glob-to-any-file:
+        - '**/*.md'
+        - 'AGENTS.md'
 
 feature:
- - head-branch: ['^feature', 'feature']
+  - head-branch: ['^feature', 'feature']
 
 release:
   - all:
@@ -11,23 +13,34 @@ release:
     - head-branch: ['^release', 'release']
 
 docker:
-- changed-files:
-  - any-glob-to-any-file:
-    - '.docker/**/*'
-    - 'pwa/.docker/**/*'
-    - '.dockerignore'
-    - 'pwa.Dockerfile'
-    - 'compose.build.yml'
-    - 'compose.vm.yml.dist'
+  - changed-files:
+    - any-glob-to-any-file:
+        - '.docker/**/*'
+        - '.dockerignore'
+        - 'Dockerfile'
+        - 'compose.yml'
+        - 'compose.vm.yml.dist'
+
+vagrant:
+  - changed-files:
+    - any-glob-to-any-file:
+        - 'Vagrantfile'
+        - '.vagrant.config.yml.dist'
+        - 'compose.vm.yml.dist'
+
+devcontainer:
+  - changed-files:
+    - any-glob-to-any-file:
+        - '.devcontainer/**/*'
 
 source:
   - all:
     - changed-files:
       - any-glob-to-any-file:
-        - 'pwa/public/**/*'
-        - 'pwa/src/**/*'
-      - all-globs-to-all-files: '!pwa/src/**/*.test.tsx'
+          - 'app/**/*'
+          - 'public/**/*'
+      - all-globs-to-all-files: '!app/**/*.test.{ts,tsx}'
 
 test:
   - changed-files:
-    - any-glob-to-any-file: 'pwa/src/**/*.test.tsx'
+    - any-glob-to-any-file: 'app/**/*.test.{ts,tsx}'

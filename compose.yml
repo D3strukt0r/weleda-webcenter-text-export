@@ -1,0 +1,22 @@
+services:
+  dev:
+    build:
+      context: .
+      target: base
+    working_dir: /app
+    command: sh -c "pnpm install && pnpm run dev --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    volumes:
+      # Inside a devcontainer running with Docker-outside-of-Docker, the host
+      # daemon needs the *host* path of the workspace, not the devcontainer's
+      # internal /workspaces/... view. The devcontainer.json populates
+      # LOCAL_WORKSPACE_FOLDER from ${localWorkspaceFolder}; for plain host
+      # docker compose use it falls back to '.'.
+      - "${LOCAL_WORKSPACE_FOLDER:-.}:/app"
+      - node_modules:/app/node_modules
+    environment:
+      NODE_ENV: development
+
+volumes:
+  node_modules:

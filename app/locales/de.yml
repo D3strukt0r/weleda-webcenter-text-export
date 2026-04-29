@@ -1,0 +1,82 @@
+meta:
+  page_title: 'Weleda — Web Center XML zu Text Konverter'
+  page_description: 'XML in lesbaren Text verwandeln. Lokale Verarbeitung im Browser.'
+
+brand:
+  weleda_alt: 'Weleda'
+  tagline: 'Web Center XML → Text Konverter'
+
+topbar:
+  hint: 'Datei ablegen oder'
+  hint_kbd: 'Klicken'
+
+theme:
+  switch_to_dark: 'Dunkles Design aktivieren'
+  switch_to_light: 'Helles Design aktivieren'
+
+lede:
+  title_prefix: 'XML in lesbaren'
+  title_emphasis: 'Text'
+  title_suffix: 'verwandeln.'
+  subtitle: 'Datei irgendwo auf der Seite ablegen. Inhalte werden lokal im Browser geparst — nichts wird hochgeladen.'
+
+dropzone:
+  aria_label: 'XML Datei hochladen'
+  title: 'XML Datei hierher ziehen oder klicken zum Auswählen'
+  subtitle_prefix: 'Auch irgendwo auf der Seite ablegen.'
+  subtitle_pill: '.xml'
+  paste_hint_prefix: 'Tipp: Mit'
+  paste_hint_or: '/'
+  paste_hint_v: 'V'
+  paste_hint_suffix: 'kannst du XML auch direkt einfügen.'
+  paste_hint_cmd: '⌘'
+  paste_hint_ctrl: 'Strg'
+
+drag_overlay:
+  message: 'XML Datei ablegen, um sie zu konvertieren'
+
+paste:
+  pasted_file_name: 'eingefügt.xml'
+
+download:
+  fallback_basename: 'export'
+
+result:
+  empty_dash: '—'
+  size_initial: '0 KB'
+  words_initial: '0 Wörter'
+  chars_initial: '0 Zeichen'
+  words_suffix: 'Wörter'
+  chars_suffix: 'Zeichen'
+
+actions:
+  copy: 'Kopieren'
+  copied: 'Kopiert'
+  download: '.txt'
+  reset: 'Zurücksetzen'
+
+search:
+  placeholder: 'Im Text suchen…'
+  matches_one: '{{count}} Treffer'
+  matches_other: '{{count}} Treffer'
+  no_matches: 'keine Treffer'
+
+toast:
+  copy_failed: 'Kopieren nicht möglich'
+  read_failed: 'Datei konnte nicht gelesen werden'
+  not_xml: 'Bitte eine XML Datei ablegen'
+  parse_partial: 'XML konnte nicht vollständig geparst werden — zeige rohen Text'
+  no_content: 'Keine Inhalte gefunden — die XML enthält keine <textContent>-Blöcke'
+
+footer:
+  brand: 'Weleda'
+  separator: '·'
+  text: 'Web Center XML zu Text Konverter'
+
+errors:
+  generic_title: 'Etwas ist schiefgelaufen'
+  unknown: 'Unbekannter Fehler'
+
+not_found:
+  title: '404'
+  message: 'Seite nicht gefunden.'

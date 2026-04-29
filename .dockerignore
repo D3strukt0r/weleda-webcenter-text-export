@@ -1,27 +1,22 @@
-# https://stackoverflow.com/a/51429852/4156752
-# Ignore everything
-*
+node_modules
+build
+.react-router
+.git
+.github
+.idea
+.vscode
+.history
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db
 
-# Allow files and directories
-!/.docker/rootfs
-
-!/pwa/.docker/rootfs-prod
-!/pwa/public
-!/pwa/src
-!/pwa/.browserslistrc
-!/pwa/index.html
-!/pwa/package.json
-!/pwa/pnpm-lock.yaml
-!/pwa/postcss.config.js
-!/pwa/tailwind.config.ts
-!/pwa/tsconfig.json
-!/pwa/tsconfig.node.json
-!/pwa/vite.config.ts
-!/pwa/vitest-setup.js
-
-# Ignore unnecessary files inside allowed directories
-# This should go after the allowed directories
-**/*~
-**/*.log
-**/.DS_Store
-**/Thumbs.db
+# Local-only dev infrastructure — never part of the production image.
+.devcontainer
+.vagrant
+.vagrant.config.yml*
+Vagrantfile
+compose*.yml
+compose*.yml.dist
+.docker/certs

@@ -1,49 +1,57 @@
+# VM-only stack used by Vagrant. Brings up Traefik on :443 with the local
+# mkcert cert so https://weleda-webcenter-text-export.test routes to either
+# the dev container (Vite) or the prod SSR container, depending on which
+# profile you bring up.
+#
+# This file is the dist/template; the Vagrantfile copies it to
+# `compose.vm.yml` on first boot. Edit `compose.vm.yml` (gitignored) for
+# local customisation, or this file for project-wide changes.
+#
+# Bring up dev:  docker compose -f compose.vm.yml --profile dev up
+# Bring up prod: docker compose -f compose.vm.yml --profile prod up
+
 services:
-  pwa:
+  dev:
     build:
-      dockerfile: pwa.Dockerfile
-      ssh:
-        - default
-      target: dev
+      context: .
+      dockerfile: Dockerfile
+      target: base
     profiles: [dev]
-    container_name: pwa
+    container_name: weleda-dev
+    working_dir: /app
+    command: sh -c "pnpm install && pnpm run dev --host 0.0.0.0"
     volumes:
-      # Mount app directory
-      - ./pwa:/usr/local/src/app
-
-      # Store package manager cache in vagrant
+      - .:/app
+      - node_modules:/app/node_modules
       - ~/data/pnpm:/var/cache/pnpm
-
-      # Entrypoint scripts to run only locally (install deps, etc.)
-      - ./pwa/.docker/rootfs-dev/usr/local/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
-      - ./pwa/.docker/rootfs-dev/docker-entrypoint.d/10_install-deps.sh:/docker-entrypoint.d/10_install-deps.sh
-      #- ./pwa/.docker/rootfs-local/docker-entrypoint.d/20_build.sh:/docker-entrypoint.d/20_build.sh
-    depends_on:
-      - traefik
+    environment:
+      NODE_ENV: development
+    depends_on: [traefik]
     labels:
-      traefik.enable: true
-      traefik.http.routers.pwa.entrypoints: websecure
-      traefik.http.routers.pwa.rule: Host(`weleda-webcenter-text-export.test`)
-      traefik.http.routers.pwa.tls: true
+      traefik.enable: 'true'
+      traefik.http.routers.dev.entrypoints: websecure
+      traefik.http.routers.dev.rule: Host(`weleda-webcenter-text-export.test`)
+      traefik.http.routers.dev.tls: 'true'
+      traefik.http.services.dev.loadbalancer.server.port: '5173'
 
-  pwa-prod:
+  prod:
     build:
-      dockerfile: pwa.Dockerfile
-      ssh:
-        - default
-      target: prod
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
     profiles: [prod]
-    container_name: pwa-prod
-    depends_on:
-      - traefik
+    container_name: weleda-prod
+    depends_on: [traefik]
     labels:
-      traefik.enable: true
-      traefik.http.routers.pwa.entrypoints: websecure
-      traefik.http.routers.pwa.rule: Host(`weleda-webcenter-text-export.test`)
-      traefik.http.routers.pwa.tls: true
+      traefik.enable: 'true'
+      traefik.http.routers.prod.entrypoints: websecure
+      traefik.http.routers.prod.rule: Host(`weleda-webcenter-text-export.test`)
+      traefik.http.routers.prod.tls: 'true'
+      traefik.http.services.prod.loadbalancer.server.port: '3000'
 
   traefik:
     image: traefik
+    profiles: [dev, prod]
     init: true
     command:
       - --api.insecure=true
@@ -66,8 +74,11 @@ services:
       - ./.docker/certs:/etc/ssl/certs/local:ro
       - ./.docker/rootfs-local/traefik/etc/traefik/dynamic_conf/conf.yml:/etc/traefik/dynamic_conf/conf.yml:ro
     labels:
-      traefik.enable: true
+      traefik.enable: 'true'
       traefik.http.routers.traefik.entrypoints: websecure
       traefik.http.routers.traefik.rule: Host(`traefik.weleda-webcenter-text-export.test`)
-      traefik.http.routers.traefik.tls: true
+      traefik.http.routers.traefik.tls: 'true'
       traefik.http.routers.traefik.service: api@internal
+
+volumes:
+  node_modules:

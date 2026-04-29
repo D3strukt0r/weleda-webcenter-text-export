@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<artwork_content:artworkContentMessage xmlns:artwork_content="urn:gs1:ecom:artwork_content:xsd:3" xmlns:sh="http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader">
+    <sh:StandardBusinessDocumentHeader>
+        <sh:HeaderVersion>1.0</sh:HeaderVersion>
+        <sh:DocumentIdentification>
+            <sh:Standard>GS1</sh:Standard>
+            <sh:InstanceIdentifier>FixtureMessage.xml</sh:InstanceIdentifier>
+        </sh:DocumentIdentification>
+    </sh:StandardBusinessDocumentHeader>
+    <artworkContent>
+        <artworkContentPieceOfArt>
+            <artworkContentLocale>
+                <localeIdentifier>de-CH</localeIdentifier>
+            </artworkContentLocale>
+            <artworkContentCopyElement>
+                <copyElementTypeCode>PRODUCT_NAME</copyElementTypeCode>
+                <instanceSequence>1</instanceSequence>
+                <textContent>
+                    <html><body><p>Beispiel Tropfen</p></body></html>
+                </textContent>
+            </artworkContentCopyElement>
+            <artworkContentCopyElement>
+                <copyElementTypeCode>INDICATIONS_HEADER</copyElementTypeCode>
+                <instanceSequence>3</instanceSequence>
+                <textContent>
+                    <html><body><p><b>Wann wird Beispiel Tropfen angewendet?</b></p></body></html>
+                </textContent>
+            </artworkContentCopyElement>
+            <artworkContentCopyElement>
+                <copyElementTypeCode>INDICATIONS_LONG</copyElementTypeCode>
+                <instanceSequence>2</instanceSequence>
+                <textContent>
+                    <html><body><p>Hilft bei <i>leichten Beschwerden</i> der oberen Atemwege.</p></body></html>
+                </textContent>
+            </artworkContentCopyElement>
+            <artworkContentCopyElement>
+                <copyElementTypeCode>PRECAUTION</copyElementTypeCode>
+                <instanceSequence>4</instanceSequence>
+                <textContent>
+                    <html><body><ul><li>nicht bei Kindern unter 6 Jahren</li><li>bei Allergien Rücksprache mit Arzt halten</li></ul></body></html>
+                </textContent>
+            </artworkContentCopyElement>
+            <artworkContentCopyElement>
+                <copyElementTypeCode>APPLICATION_ADVICE</copyElementTypeCode>
+                <instanceSequence>5</instanceSequence>
+                <textContent>
+                    <html><body><p>Tropfen einnehmen<br/>danach Wasser trinken</p></body></html>
+                </textContent>
+            </artworkContentCopyElement>
+        </artworkContentPieceOfArt>
+    </artworkContent>
+</artwork_content:artworkContentMessage>
