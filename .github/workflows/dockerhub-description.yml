@@ -5,23 +5,40 @@ on:
     branches:
       - master
     paths:
-      - README.md
       - .github/workflows/dockerhub-description.yml
+      - README.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   dockerHubDescription:
+    name: Update Docker Hub Description
     runs-on: ubuntu-latest
+    # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#example-using-secrets
+
+    env:
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v6
 
       - name: Prepare
         id: prep
-        run: echo "repository=$(echo "${{ vars.IMAGE_NAME }}" | tr '[A-Z]' '[a-z]')" >> $GITHUB_OUTPUT
+        run: |
+          echo "repository=$(echo "${{ vars.IMAGE_NAME }}" | tr '[A-Z]' '[a-z]')" >> $GITHUB_OUTPUT
 
-      - uses: peter-evans/dockerhub-description@v4
+      - name: Update Docker Hub Description
+        uses: peter-evans/dockerhub-description@v5
+        if: ${{ !env.ACT && vars.DOCKERHUB_USERNAME != '' && env.dockerhub_token != '' }}
         with:
-          username: ${{ vars.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          # OAT (Organisation Access Token) doesn't work yet, use PAT (Personal Access Token)
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ steps.prep.outputs.repository }}
+          # Input exceeding 100 characters will be truncated.
           short-description: ${{ github.event.repository.description }}
+          # readme-filepath: ./README-DOCKERHUB.md
+          enable-url-completion: true

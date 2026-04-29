@@ -9,23 +9,27 @@ permissions:
 
 jobs:
   auto-merge:
+    name: Auto-Merge Dependabot PRs
     runs-on: ubuntu-latest
 
     # Checking the actor will prevent your Action run failing on non-Dependabot PRs
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'D3strukt0r/weleda-webcenter-text-export'
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v6
 
-      - name: Dependabot metadata 🎣
+      - name: Fetch Dependabot metadata 🔍
+        uses: dependabot/fetch-metadata@v3
         id: metadata
-        uses: dependabot/fetch-metadata@v2
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: ${{ github.token }}
 
       - name: Approve Dependabot PR if not already approved ✅
-        if: ${{steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch'}}
+        if: steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           gh pr checkout "$PR_URL" # sets the upstream metadata for `gh pr status`
           if [ "$(gh pr status --json reviewDecision -q .currentBranch.reviewDecision)" != "APPROVED" ]; then
@@ -33,13 +37,10 @@ jobs:
           else
             echo "PR already approved, skipping additional approvals to minimize emails/notification noise."
           fi
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Enable auto-merge for Dependabot PR 🪄
-        if: ${{steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch'}}
-        run: gh pr merge --auto --merge "$PR_URL"
+        if: steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch'
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: gh pr merge --auto --merge "$PR_URL"

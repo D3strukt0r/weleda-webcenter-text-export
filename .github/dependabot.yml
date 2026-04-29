@@ -7,31 +7,25 @@
 
 version: 2
 updates:
-  # GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    target-branch: "develop"
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
     labels:
       - "dependabot :robot:"
-    reviewers:
-      - "D3strukt0r"
     schedule:
-      interval: "weekly" # on monday
-      time: "16:00"
-      timezone: "Europe/Zurich"
+      interval: weekly # on monday
+      time: '09:30'
+      timezone: Europe/Zurich
 
-  # PWA pnpm
-  - package-ecosystem: "npm"
-    directory: "/pwa"
-    target-branch: "develop"
+  - package-ecosystem: npm
+    directory: /pwa
+    target-branch: develop
     labels:
       - "dependabot :robot:"
-    #reviewers:
-    #  - "D3strukt0r"
     schedule:
-      interval: "weekly" # on monday
-      time: "16:00"
-      timezone: "Europe/Zurich"
+      interval: weekly # on monday
+      time: '09:30'
+      timezone: Europe/Zurich
     groups:
       pwa-dependencies:
         applies-to: version-updates

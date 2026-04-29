@@ -75,7 +75,7 @@ ENTRYPOINT ["tini", "--", "docker-entrypoint.sh"]
 # https://github.com/nginxinc/docker-nginx-unprivileged/blob/main/mainline/debian/Dockerfile
 # https://github.com/krallin/tini
 # -----------------------------------------------------------------------------
-FROM nginxinc/nginx-unprivileged:1.27-bookworm AS nginx
+FROM nginxinc/nginx-unprivileged:1.28.0-bookworm AS nginx
 
 USER root
 

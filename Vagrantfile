@@ -159,37 +159,44 @@ Vagrant.configure('2') do |config|
         sudo /etc/init.d/ssh restart
     SCRIPT
 
-    # Copy the public SSH key of the host system user to the vagrant box to
-    # allow Git access
-    if File.file?(File.expand_path('~/.ssh/id_ed25519')) && File.file?(File.expand_path('~/.ssh/id_ed25519.pub'))
-        config.vm.provision 'file', source: '~/.ssh/id_ed25519', destination: '~/.ssh/id_ed25519', run: 'always'
-        config.vm.provision 'file', source: '~/.ssh/id_ed25519.pub', destination: '~/.ssh/id_ed25519.pub', run: 'always'
-    elsif File.file?(File.expand_path('~/.ssh/id_rsa')) && File.file?(File.expand_path('~/.ssh/id_rsa.pub'))
-        puts 'Still using RSA? Consider switching to ED25519 for better security'
-        config.vm.provision 'file', source: '~/.ssh/id_rsa', destination: '~/.ssh/id_rsa', run: 'always'
-        config.vm.provision 'file', source: '~/.ssh/id_rsa.pub', destination: '~/.ssh/id_rsa.pub', run: 'always'
+    if settings.dig('ssh', 'forward_agent') == true
+        # https://unix.stackexchange.com/questions/77238/ssh-agent-forwarding-for-a-vagrant-vm
+        config.ssh.forward_agent = true
     else
-        puts 'No SSH key found, please generate them first'
-        puts 'ECDSA: $ ssh-keygen -t ed25519 -C "your_email@example.com"'
-        puts 'RSA:   $ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"'
-        exit
+        # Copy the public SSH key of the host system user to the vagrant box to
+        # allow Git access
+        if File.file?(File.expand_path('~/.ssh/id_ed25519')) && File.file?(File.expand_path('~/.ssh/id_ed25519.pub'))
+            config.vm.provision 'file', source: '~/.ssh/id_ed25519', destination: '~/.ssh/id_ed25519', run: 'always'
+            config.vm.provision 'file', source: '~/.ssh/id_ed25519.pub', destination: '~/.ssh/id_ed25519.pub', run: 'always'
+        elsif File.file?(File.expand_path('~/.ssh/id_rsa')) && File.file?(File.expand_path('~/.ssh/id_rsa.pub'))
+            puts 'Still using RSA? Consider switching to ED25519 for better security'
+            config.vm.provision 'file', source: '~/.ssh/id_rsa', destination: '~/.ssh/id_rsa', run: 'always'
+            config.vm.provision 'file', source: '~/.ssh/id_rsa.pub', destination: '~/.ssh/id_rsa.pub', run: 'always'
+        else
+            puts 'No SSH key found, please generate them first'
+            puts 'ECDSA: $ ssh-keygen -t ed25519 -C "your_email@example.com"'
+            puts 'RSA:   $ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"'
+            exit
+        end
+
+        config.vm.provision 'fix-ssh-permissions', type: 'shell', privileged: false, reset: true, inline: <<-SCRIPT
+            set -e -u -x -o pipefail
+            if [ -f ~/.ssh/id_ed25519 ]; then
+                chmod 600 ~/.ssh/id_ed25519
+            fi
+        SCRIPT
+
+        # Start SSH agent and add SSH key to agent
+        config.vm.provision 'start-ssh-agent-at-boot', type: 'shell', privileged: false, inline: <<-SCRIPT
+            set -e -u -x -o pipefail
+            echo 'eval "$(ssh-agent -s)"' >> ~/.bashrc
+            echo 'ssh-add -l > /dev/null || ssh-add' >> ~/.bashrc
+        SCRIPT
     end
-    config.vm.provision 'fix-ssh-permissions', type: 'shell', privileged: false, reset: true, inline: <<-SCRIPT
-        set -e -u -x -o pipefail
-        if [ -f ~/.ssh/id_ed25519 ]; then
-            chmod 600 ~/.ssh/id_ed25519
-        fi
-    SCRIPT
+
     config.vm.provision 'update-known_hosts', type: 'shell', privileged: false, reset: true, inline: <<-SCRIPT
         set -e -u -x -o pipefail
         ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
-    SCRIPT
-
-    # Start SSH agent and add SSH key to agent
-    config.vm.provision 'start-ssh-agent-at-boot', type: 'shell', privileged: false, inline: <<-SCRIPT
-        set -e -u -x -o pipefail
-        echo 'eval "$(ssh-agent -s)"' >> ~/.bashrc
-        echo 'ssh-add -l > /dev/null || ssh-add' >> ~/.bashrc
     SCRIPT
 
     config.vm.provision 'chdir-to-dockerfile', type: 'shell', privileged: false, inline: <<-SCRIPT
@@ -206,6 +213,7 @@ Vagrant.configure('2') do |config|
     config.vm.provision 'fix-app-data-permissions', type: 'shell', privileged: false, run: 'always', inline: <<-SCRIPT
         set -e -u -x -o pipefail
         sudo chown --recursive vagrant:vagrant ~/data
+        sudo chown --recursive 999:999 ~/data/pnpm
     SCRIPT
 
     # Copy compose.yml.dist if it doesn't exist yet to compose.yml
@@ -317,16 +325,27 @@ Vagrant.configure('2') do |config|
     config.trigger.after :up do |trigger|
         trigger.name = 'Start Containers'
         trigger.info = 'Starting Docker containers...'
-        trigger.run_remote = { privileged: false, inline: <<-SCRIPT
-            set -e -u -x -o pipefail
-            cd /vagrant
-            eval "$(ssh-agent -s)"
-            ssh-add -l > /dev/null || ssh-add
-            docker compose pull
-            docker compose build --pull
-            docker compose --profile dev up --detach
-        SCRIPT
-        }
+        if settings.dig('ssh', 'forward_agent') == true
+            trigger.run_remote = { privileged: false, inline: <<-SCRIPT
+                set -e -u -x -o pipefail
+                cd /vagrant
+                docker compose pull
+                docker compose build --pull
+                docker compose --profile dev up --detach
+            SCRIPT
+            }
+        else
+            trigger.run_remote = { privileged: false, inline: <<-SCRIPT
+                set -e -u -x -o pipefail
+                cd /vagrant
+                eval "$(ssh-agent -s)"
+                ssh-add -l > /dev/null || ssh-add
+                docker compose pull
+                docker compose build --pull
+                docker compose --profile dev up --detach
+            SCRIPT
+            }
+        end
     end
     config.vm.post_up_message = 'Machine was booted. Docker is starting. To check use "docker compose logs -f pwa api".'
     if settings.dig('network', 'hostname') || settings.dig('network', 'ip')
