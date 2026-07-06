@@ -8,7 +8,7 @@ export function ThemeToggle() {
   const {t} = useTranslation();
   const {theme, toggle} = useTheme();
   const [mounted, setMounted] = useState(false);
-  // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect -- SSR-hydration marker: must fire only on the client after mount, so aria-pressed stays absent during SSR
+  // eslint-disable-next-line react/set-state-in-effect -- SSR-hydration marker: must fire only on the client after mount, so aria-pressed stays absent during SSR
   useEffect(() => setMounted(true), []);
 
   const isDark = theme === 'dark';

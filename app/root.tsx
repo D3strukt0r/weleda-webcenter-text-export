@@ -69,7 +69,7 @@ export function Layout({children}: {children: React.ReactNode}) {
         <meta name="theme-color" content={THEME_COLOR_DARK} media="(prefers-color-scheme: dark)" />
         {/* Must run before <Links /> so the theme class is on <html> before
             any stylesheet evaluates — that's what prevents the FOUC. */}
-        {/* eslint-disable-next-line react-dom/no-dangerously-set-innerhtml -- themeBootstrap is a constant string defined above; no user input, no escaping needed */}
+        {/* eslint-disable-next-line react/dom-no-dangerously-set-innerhtml -- themeBootstrap is a constant string defined above; no user input, no escaping needed */}
         <script dangerouslySetInnerHTML={{__html: themeBootstrap}} />
         <Meta />
         <Links />

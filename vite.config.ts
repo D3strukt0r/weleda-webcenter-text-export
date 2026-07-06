@@ -9,7 +9,6 @@ import {copyrightFromLicense} from './app/vite/plugins/copyright-from-license';
 import {faviconRasters} from './app/vite/plugins/favicon-rasters';
 import {robots} from './app/vite/plugins/robots';
 import {sitemap} from './app/vite/plugins/sitemap';
-import {spaFallback} from './app/vite/plugins/spa-fallback';
 import {stripSpaServerExports} from './app/vite/plugins/strip-spa-server-exports';
 import {webManifest} from './app/vite/plugins/web-manifest';
 import {yaml} from './app/vite/plugins/yaml';
@@ -121,9 +120,6 @@ export default defineConfig({
           robots({siteUrl: SITE_URL}),
         ]
       : []),
-    // Copies build/client/index.html → 404.html (GitHub Pages SPA fallback).
-    // Reads build/client itself; SSR builds emit no index.html there → no-op.
-    spaFallback(),
   ],
   resolve: {
     tsconfigPaths: true,
