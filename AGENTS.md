@@ -19,6 +19,8 @@ pnpm test:watch         # vitest in watch mode
 Single test: `pnpm test app/lib/xml-to-text/convert.test.ts`
 or `pnpm vitest run -t "preserves document order"` for one case by name.
 
+TypeScript 6 and 7 run side by side, so don't collapse the two aliased devDependencies into one. `@typescript/native` *is* TypeScript 7 and owns the `tsc` binary that `pnpm typecheck` executes; the `typescript` entry is aliased to `@typescript/typescript6` so everything importing the `typescript` *module* gets a 6.x API — typescript-eslint via `@iwf-web/eslint-coding-standard`, plus `@react-router/dev` (peer `^5.1.0 || ^6.0.0`). TypeScript 7.0 deliberately ships no programmatic API (it arrives in 7.1), so a plain `typescript@7` makes `pnpm lint` crash on module load. The 6.x compiler stays reachable as `tsc6`, and `pnpm peers check` reporting an unmet `typescript` peer is expected, since peers match by package name while the alias resolves to `@typescript/typescript6`.
+
 OCI image (Nix-built, no Dockerfile): `nix build .#dockerImage && docker load < result && docker run --rm -p 3000:3000 d3strukt0r/weleda-webcenter-text-export:latest`. On Windows / macOS without a host Nix install, run the `nix build` step inside `nixos/nix:2.34.6` (see README → Building the OCI image locally).
 
 ## Local development paths
