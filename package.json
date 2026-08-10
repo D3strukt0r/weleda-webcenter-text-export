@@ -42,8 +42,8 @@
     "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
-    "@antfu/ni": "^30.3.0",
-    "@cloudflare/vite-plugin": "^1.50.0",
+    "@antfu/ni": "^30.5.0",
+    "@cloudflare/vite-plugin": "^1.51.1",
     "@iwf-web/eslint-coding-standard": "^1.1.1",
     "@iwf-web/tsconfig": "^1.1.1",
     "@react-router/dev": "^8.3.0",
@@ -57,7 +57,7 @@
     "@types/react-dom": "^19.2.4",
     "@typescript/native": "npm:typescript@^7.0.2",
     "culori": "^4.0.2",
-    "eslint": "^10.8.0",
+    "eslint": "^10.8.1",
     "jiti": "^2.7.0",
     "js-yaml": "^5.2.3",
     "jsdom": "^29.1.1",
@@ -67,10 +67,10 @@
     "sharp": "^0.35.3",
     "tailwindcss": "^4.3.3",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "vite": "^8.2.0",
+    "vite": "^8.2.1",
     "vite-plugin-svgr": "^5.2.0",
     "vitest": "^4.1.10",
-    "wrangler": "^4.118.0",
+    "wrangler": "^4.120.0",
     "yaml": "^2.9.0"
   },
   "packageManager": "pnpm@11.9.0+sha512.bd682d5d03fe525ef7c9fd6780c6884d1e756ac4c9c9fe00c538782824310dcf90e3ddc4f53835f06dfaebd5085e41855e0bcbb3b60de2ac5bbab89e5036f03b"
